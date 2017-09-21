@@ -1060,6 +1060,34 @@ class SlackAlerter(Alerter):
             except RequestException as e:
                 raise EAException("Error posting to slack: %s" % e)
         elastalert_logger.info("Alert sent to Slack")
+    
+    def resolve(self):
+        # post resolve message to slack
+        headers = {'content-type': 'application/json'}
+        proxies = {'https': self.slack_proxy} if self.slack_proxy else None
+        payload = {
+            'username': self.slack_username_override,
+            'channel': self.slack_channel_override,
+            'parse': self.slack_parse_override,
+            'text': self.slack_text_string,
+            'icon_emoji': ':beers:',
+            'attachments': [
+                {
+                    'color': 'good',
+                    'title': self.rule['name'],
+                    'text': 'Alert is resolved',
+                    'fields': []
+                }
+            ]
+        }
+
+        for url in self.slack_webhook_url:
+            try:
+                response = requests.post(url, data=json.dumps(payload, cls=DateTimeEncoder), headers=headers, proxies=proxies)
+                response.raise_for_status()
+            except RequestException as e:
+                raise EAException("Error posting to slack: %s" % e)
+        elastalert_logger.info("Alert sent to Slack")
 
     def get_info(self):
         return {'type': 'slack',
