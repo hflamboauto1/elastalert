@@ -1070,12 +1070,12 @@ class SlackAlerter(Alerter):
             'channel': self.slack_channel_override,
             'parse': self.slack_parse_override,
             'text': self.slack_text_string,
-            'icon_emoji': ':beers:',
+            'icon_emoji': self.slack_emoji_override,
             'attachments': [
                 {
                     'color': 'good',
                     'title': self.rule['name'],
-                    'text': 'Alert is resolved',
+                    'text': 'Alert is resolved. No Errors in current run.',
                     'fields': []
                 }
             ]
