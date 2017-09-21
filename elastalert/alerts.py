@@ -200,6 +200,13 @@ class Alerter(object):
         """
         raise NotImplementedError()
 
+    def resolve(self):
+        """ Resolve a previous alert. Match is a dictionary of information about the alert.
+
+        :param match: A dictionary of relevant information to the alert.
+        """
+        raise NotImplementedError() 
+
     def get_info(self):
         """ Returns a dictionary of data related to this alert. At minimum, this should contain
         a field type corresponding to the type of Alerter. """
