@@ -863,7 +863,7 @@ class ElastAlerter():
                         'must': [
                             {
                                 'match_phrase': {
-                                    'rule_name': '\'%s\'' % rule['name']
+                                    'rule_name': '%s' % rule['name']
                                 }
                             },
                             {
