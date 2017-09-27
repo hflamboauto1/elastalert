@@ -68,7 +68,7 @@ class OpsGenieAlerter(Alerter):
                 elastalert_logger.info("Error response from {0} \n "
                                        "API Response: {1}".format(self.to_addr, r))
                 r.raise_for_status()
-            logging.info("Alert sent to OpsGenie")
+            elastalert_logger.info("Alert sent to OpsGenie")
         except Exception as err:
             raise EAException("Error sending alert: {0}".format(err))
 
