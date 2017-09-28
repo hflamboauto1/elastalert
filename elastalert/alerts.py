@@ -1012,6 +1012,7 @@ class SlackAlerter(Alerter):
         self.slack_msg_color = self.rule.get('slack_msg_color', 'danger')
         self.slack_parse_override = self.rule.get('slack_parse_override', 'none')
         self.slack_text_string = self.rule.get('slack_text_string', '')
+        self.slack_resolve_alert = self.rule.get('resolve_alert', None)
 
     def format_body(self, body):
         # https://api.slack.com/docs/formatting
@@ -1067,35 +1068,38 @@ class SlackAlerter(Alerter):
             except RequestException as e:
                 raise EAException("Error posting to slack: %s" % e)
         elastalert_logger.info("Alert sent to Slack")
-    
+   
     def resolve(self):
-        # post resolve message to slack
-        headers = {'content-type': 'application/json'}
-        proxies = {'https': self.slack_proxy} if self.slack_proxy else None
-        payload = {
-            'username': self.slack_username_override,
-            'channel': self.slack_channel_override,
-            'parse': self.slack_parse_override,
-            'text': self.slack_text_string,
-            'icon_emoji': self.slack_emoji_override,
-            'attachments': [
-                {
-                    'color': 'good',
-                    'title': self.rule['name'],
-                    'text': 'Alert is resolved. No Errors in current run.',
-                    'fields': []
-                }
-            ]
-        }
+        # post resolve message to slack if resolve_alert is true
+        if self.slack_resolve_alert == True:
+            headers = {'content-type': 'application/json'}
+            proxies = {'https': self.slack_proxy} if self.slack_proxy else None
+            payload = {
+                'username': self.slack_username_override,
+                'channel': self.slack_channel_override,
+                'parse': self.slack_parse_override,
+                'text': self.slack_text_string,
+                'icon_emoji': self.slack_emoji_override,
+                'attachments': [
+                    {
+                        'color': 'good',
+                        'title': self.rule['name'],
+                        'text': 'Alert is resolved, no error in the current run',
+                        'fields': []
+                    }
+                ]
+            }
 
-        for url in self.slack_webhook_url:
-            try:
-                response = requests.post(url, data=json.dumps(payload, cls=DateTimeEncoder), headers=headers, proxies=proxies)
-                response.raise_for_status()
-            except RequestException as e:
-                raise EAException("Error posting to slack: %s" % e)
-        elastalert_logger.info("Alert sent to Slack")
-
+            for url in self.slack_webhook_url:
+                try:
+                    response = requests.post(url, data=json.dumps(payload, cls=DateTimeEncoder), headers=headers, proxies=proxies)
+                    response.raise_for_status()
+                except RequestException as e:
+                    raise EAException("Error posting to slack: %s" % e)
+            elastalert_logger.info("Alert sent to Slack")
+        else:
+            elastalert_logger.info("Alert not sent to Slack as resolve alert is False")
+ 
     def get_info(self):
         return {'type': 'slack',
                 'slack_username_override': self.slack_username_override,

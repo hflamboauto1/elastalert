@@ -24,6 +24,7 @@ class OpsGenieAlerter(Alerter):
         self.custom_message = self.rule.get('opsgenie_message')
         self.alias = self.rule.get('opsgenie_alias')
         self.opsgenie_proxy = self.rule.get('opsgenie_proxy', None)
+        self.opsgenie_resolve_alert = self.rule.get('resolve_alert', None)
 
     def alert(self, matches):
         body = ''
@@ -84,27 +85,30 @@ class OpsGenieAlerter(Alerter):
         return subject
 
     def resolve(self):
-        #build opsgenie result, use alias to resolv open alerts 
+        if self.opsgenie_resolve_alert == True:
 
-        post = {'alias' :self.alias, 'apiKey' :self.api_key}
+                #build opsgenie result, use alias to resolv open alerts 
+                post = {'alias' :self.alias, 'apiKey' :self.api_key}
 
-        logging.debug(json.dumps(post))
+                logging.debug(json.dumps(post))
 
-        headers = {'content-type': 'application/json'}
-        # set https proxy, if it was provided
-        proxies = {'https': self.opsgenie_proxy} if self.opsgenie_proxy else None
+                headers = {'content-type': 'application/json'}
+                # set https proxy, if it was provided
+                proxies = {'https': self.opsgenie_proxy} if self.opsgenie_proxy else None
 
-        try:
-            r = requests.post(self.to_addr.__add__('/close'), json=post, headers=headers, proxies=proxies)
+                try:
+                    r = requests.post(self.to_addr.__add__('/close'), json=post, headers=headers, proxies=proxies)
 
-            logging.debug('request response: {0}'.format(r))
-            if r.status_code != 200:
-                elastalert_logger.info("Error response from {0} \n "
-                                       "API Response: {1}".format(self.to_addr, r))
-                r.raise_for_status()
-            logging.info("Auto Resolve Alert sent to OpsGenie")
-        except Exception as err:
-            raise EAException("Error sending alert: {0}".format(err))
+                    logging.debug('request response: {0}'.format(r))
+                    if r.status_code != 200:
+                        elastalert_logger.info("Error response from {0} \n "
+                                           "API Response: {1}".format(self.to_addr, r))
+                        r.raise_for_status()
+                    elastalert_logger.info("Auto Resolve Alert sent to OpsGenie")
+                except Exception as err:
+                    raise EAException("Error sending alert: {0}".format(err))
+        else:
+            elastalert_logger.info("Alert not sent to Slack as resolve alert is not set")
 
     def get_info(self):
         ret = {'type': 'opsgenie'}
