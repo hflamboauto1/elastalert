@@ -88,7 +88,7 @@ class OpsGenieAlerter(Alerter):
         if self.opsgenie_resolve_alert == True:
 
                 #build opsgenie result, use alias to resolv open alerts 
-                post = {'alias' :self.alias, 'apiKey' :self.api_key}
+                post = {'alias' :self.alias, 'apiKey' :self.api_key, 'note': 'OK- Elastalert auto resolver'}
 
                 logging.debug(json.dumps(post))
 
