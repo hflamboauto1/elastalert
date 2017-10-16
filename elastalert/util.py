@@ -127,6 +127,13 @@ def dt_to_ts(dt):
     # but we should try to use millisecond accuracy and Z to indicate UTC
     return ts.replace('000+00:00', 'Z').replace('+00:00', 'Z')
 
+def dt_to_ts_no_ms(dt):
+    if not isinstance(dt, datetime.datetime):
+        logging.warning('Expected datetime, got %s' % (type(dt)))
+        return dt
+    ts_iso = dt.isoformat()
+    ts = dateutil.parser.parse(ts_iso).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return ts
 
 def ts_to_dt_with_format(timestamp, ts_format):
     if isinstance(timestamp, datetime.datetime):

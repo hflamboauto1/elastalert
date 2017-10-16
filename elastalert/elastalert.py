@@ -873,7 +873,7 @@ class ElastAlerter():
                             },
                             {
                                 'range': {
-                                    'alert_time': {'from': dt_to_ts(start), 'to': dt_to_ts(end)}
+                                    'alert_time': {'from': dt_to_ts_no_ms(start), 'to': dt_to_ts_no_ms(end)}
                                 }
                             }
                         ]
