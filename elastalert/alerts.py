@@ -1278,9 +1278,9 @@ class SlackAlerter(Alerter):
                     response.raise_for_status()
                 except RequestException as e:
                     raise EAException("Error posting to slack: %s" % e)
-            elastalert_logger.info("Alert sent to Slack")
+            elastalert_logger.info("Alert %s sent to Slack" % self.rule['name'])
         else:
-            elastalert_logger.info("Alert not sent to Slack as resolve alert is False")
+            elastalert_logger.info("Alert %s not sent to Slack as resolve alert is False" % self.rule['name'])
 
     def get_info(self):
         return {'type': 'slack',
