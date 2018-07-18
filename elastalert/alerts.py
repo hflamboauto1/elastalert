@@ -1249,7 +1249,7 @@ class SlackAlerter(Alerter):
                 response.raise_for_status()
             except RequestException as e:
                 raise EAException("Error posting to slack: %s" % e)
-        elastalert_logger.info("Alert sent to Slack")
+        elastalert_logger.info("Alert '%s' sent to Slack" % self.rule['name'])
 
     def resolve(self):
         # post resolve message to slack if resolve_alert is true
@@ -1278,9 +1278,9 @@ class SlackAlerter(Alerter):
                     response.raise_for_status()
                 except RequestException as e:
                     raise EAException("Error posting to slack: %s" % e)
-            elastalert_logger.info("Alert %s sent to Slack" % self.rule['name'])
+            elastalert_logger.info("ResolveAlert '%s' sent to Slack" % self.rule['name'])
         else:
-            elastalert_logger.info("Alert %s not sent to Slack as resolve alert is False" % self.rule['name'])
+            elastalert_logger.info("ResolveAlert '%s' not sent to Slack as resolve alert is False" % self.rule['name'])
 
     def get_info(self):
         return {'type': 'slack',
